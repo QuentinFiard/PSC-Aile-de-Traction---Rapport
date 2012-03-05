@@ -8,7 +8,6 @@ Commandes de base :
 	git init
 
 
-
     - Vous avez modifié des fichiers et souhaitez savoir lesquels ?
     
 	git status
@@ -105,3 +104,8 @@ Commandes de base :
 	    git push rapport
 	    
 	En l'absence d'erreur, votre version est maintenant la version du serveur.
+	
+	
+Configuration :
+
+git remote add rapport http://QuentinFiard@github.com/QuentinFiard/PSC-Aile-de-Traction---Rapport.git
