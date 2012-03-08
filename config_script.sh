@@ -1,5 +1,6 @@
 #!/bin/bash
 
+git config --global http.sslverify "false"
 git config --global http.proxy http://kuzh.polytechnique.fr:8080
 
 git config filter.sentencebreak.clean "perl -pe \"s/[.]*?(\\?|\\!|\\.|'') /$&%NL%\\n/g unless m/%/||m/^[\\ *\\\\\\]/\""
