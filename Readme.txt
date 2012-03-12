@@ -1,4 +1,4 @@
-Note sur l'utilisation de Git pour le rapport PSC.
+﻿Note sur l'utilisation de Git pour le rapport PSC.
 
 Commandes de base :
 
@@ -50,7 +50,7 @@ Commandes de base :
 
     - Récupérer la dernière version du rapport :
 	git fetch rapport
-	git merge rapport-master
+	git merge rapport/master
 
     Cette commande peut faire apparaitre des conflits (exemple : si deux personnes
     ont modifié le même fichier). En cas de conflit, Git affichera le nom des fichiers incompatibles.
@@ -87,7 +87,7 @@ Commandes de base :
     "git add -A" qui est plus rapide, mais attention à ne pas ajouter de fichiers
     inutiles). Puis vous exécutez
     
-	git commit -m "Fusion des données du serveur"
+	git commit -m "Fusion des donnees du serveur"
 	
     A ce stade, votre dossier contient la dernière version du rapport
     
@@ -108,4 +108,5 @@ Commandes de base :
 	
 Configuration :
 
+git config --global http.sslverify "false"
 git remote add rapport http://QuentinFiard@github.com/QuentinFiard/PSC-Aile-de-Traction---Rapport.git
