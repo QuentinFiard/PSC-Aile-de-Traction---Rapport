@@ -108,5 +108,4 @@ Commandes de base :
 	
 Configuration :
 
-git config --global http.sslverify "false"
-git remote add rapport http://QuentinFiard@github.com/QuentinFiard/PSC-Aile-de-Traction---Rapport.git
+git remote add rapport quentin.fiard@vanilla.polytechnique.fr:Rapport.git
