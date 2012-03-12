@@ -1,4 +1,4 @@
-Note sur l'utilisation de Git pour le rapport PSC.
+﻿Note sur l'utilisation de Git pour le rapport PSC.
 
 Commandes de base :
 
@@ -50,7 +50,7 @@ Commandes de base :
 
     - Récupérer la dernière version du rapport :
 	git fetch rapport
-	git merge rapport-master
+	git merge rapport/master
 
     Cette commande peut faire apparaitre des conflits (exemple : si deux personnes
     ont modifié le même fichier). En cas de conflit, Git affichera le nom des fichiers incompatibles.
