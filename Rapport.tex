@@ -217,7 +217,12 @@ Production d'électricité à l'aide d'une aile de traction\\
 \newpage
 
 \begin{intro}
-Test Aubert
+- poser le problème
+- le problème en grandeur nature
+- ce qui a déja été fait sur le sujet
+- qques chiffres sur les cargos...
+- approche énergétique
+- insister sur le fait que c'est en plein boom
 \end{intro}
 
 \newpage
@@ -227,6 +232,8 @@ Test Aubert
 \end{remerciements}
 
 \newpage
+
+
 
 \begin{partie}{Physique de l'aile}
 
@@ -248,40 +255,110 @@ Modélisation du pb , notations, hypothèses (voile rigide, fils tendus et droit
 
 \newpage
 
-\begin{partie}{Notre expérience}
+\begin{partie}{Description technique de l'expérience}
 
-\begin{sous-partie}{Étude de dimensionnement, choix des composants}
-Aubert pour dimensionnement asservissement
-\end{sous-partie}
-
-\begin{sous-partie}{Recherche de sponsors }
-Aubert
-\end{sous-partie}
-
-\begin{sous-partie}{Partie technique : conception des pièces et de l'électronique}
-
-\end{sous-partie}
-
-\begin{sous-partie}{Contrôle par joystick}
+\begin{sous-partie}{Comment passer du problème réel au problème réduit ?}
+- cargo + centrale : notre exp s'applique aux 2
+\newline
+- le boitier dont on étudie la conception sera en fait en l'air
+\newline
+- analyse de la similitude des écoulements
+\newline
+- dimensionnement
 
 \end{sous-partie}
 
-\begin{sous-partie}{Contrôle automatique asservi}
-
+\begin{sous-partie}{Cahier des charges}
+- quelles grandeurs doit on mesurer ? quelle précision ?
+\\
+- quelle vitesse de moteur ? quelle précision ? quel couple ?
+\\
+- quelle force va s'appliquer sur le système ? quelle robustesse prévoir ?
 \end{sous-partie}
+
+\begin{sous-partie}{Solutions apportées}
+- partie électronique : circuits intégrés, capteurs, contrôle du moteur
+\\
+- partie mécanique :  moteur, anémomètre, prototypage rapide IUT Cachan, échec de l'AX-18, travail du bois, caméra...
+\end{sous-partie}
+
+\begin{sous-partie}{Démarches}
+- IUT Cachan
+\\
+- Sponsor Port de Marseille, création d'un binet, plaquette sponsors
+\\
+- concours energia
+\end{sous-partie}
+
+
+
 
 \end{partie}
 
 \newpage
 
-\begin{partie}{Retour sur les résultats obtenus}
+\begin{partie}{Contrôle numérique du système}
+Intro (ou dans III.2) : schéma d'asservissement pour rappeler quelles grandeurs on commande, quelles grandeurs on mesure + schéma couche par  couche comme dans la thèse
 
-\begin{sous-partie}{Approche énergétique sur la trajectoire optimale (et critique de l'utilité de rechercher la trajectoire optimale)}
+\begin{sous-partie}{Description de l'architeture informatique globale}
+- schéma
+\\
+- préciser le contrôle du moteur, des capteurs (programme caméra)
+\end{sous-partie}
+\begin{sous-partie}{Calcul des coéfficients aérodynamiques via Gerris}
 
 \end{sous-partie}
 
-\begin{sous-partie}{Limites de l'étude (aile souple, déformation des fils)}
+\begin{sous-partie}{Description théorique de l'asservissement}
+asservissement en temps réel, expliquer le principe de la fonction distance, expliquer le fait qu'on ne se sert pas de toutes les commandes calculées...
+\end{sous-partie}
 
+\begin{sous-partie}{Acado et asservissement en temps réel}
+- pourquoi Acado
+\\
+- travail fait avec Pierre Martinon et Mario ...
+\\
+- problème de détermination de l'horizon de temps (pour être assez précis et pour que le temps de calcul ne soit pas trop long
+\\
+- déterminer le pas de temps de l'algo (compromis entre précision et capacités des composants physiques) + la précision à laquelle on doit faire les calculs
+\end{sous-partie}
+
+
+\end{partie}
+
+\newpage
+
+\begin{partie}{Analyse de l'expérience et élargissement}
+
+\begin{sous-partie}{Contrôle de l'aile via joystick et via asservissement}
+
+\end{sous-partie}
+
+\begin{sous-partie}{Limites du modèle réduit }
+Pourquoi l'expérience est difficile à réaliser
+\\
+- aile souple
+\\
+- déformation des fils
+\\
+- inertie du moteur
+\\
+- vent instable, non horizontal
+\\
+- imprécision de calcul des coefficients ?
+\\
+Pourquoi l'expérience ne cadre pas tout à fait avec le modèle réel
+- similitude de l'écoulement ?
+\\
+- boitier qui n'est pas en l'air
+\end{sous-partie}
+
+\begin{sous-partie}{Approche énergétique}
+On a vu qu'il est possible de réaliser  l'asservissement d'une aile de traction.
+\\
+Comment mettre ceci à profit pour avoir le plus d'énergie possible ?
+\\
+Trajectoires optimales, robustesse.
 \end{sous-partie}
 
 \end{partie}
