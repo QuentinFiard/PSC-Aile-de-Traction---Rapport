@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper,twoside,12pt]{article}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -16,10 +16,36 @@
 \usepackage{psfrag}
 \usepackage{bbm}
 \usepackage{ifthen}
-\addtolength{\hoffset}{-1cm}
-\addtolength{\textwidth}{2.5cm} 
-\addtolength{\voffset}{-2.5cm}
-\addtolength{\textheight}{4cm} 
+
+\newlength{\myhoffset}
+\newlength{\mytextwidth}
+\newlength{\myvoffset}
+\newlength{\mytextheight}
+\setlength{\myhoffset}{-1cm}
+\setlength{\mytextwidth}{2.5cm}
+\setlength{\myvoffset}{-2.5cm}
+\setlength{\mytextheight}{3cm}
+
+\addtolength{\hoffset}{\myhoffset}
+\addtolength{\textwidth}{\mytextwidth} 
+\addtolength{\voffset}{\myvoffset}
+\addtolength{\textheight}{\mytextheight} 
+
+%textpos : permet de placer des éléments par leur coordonnées absolues sur la page
+% utilisé pour les entêtes et pied de pages
+
+\usepackage[absolute]{textpos}
+\setlength{\TPHorizModule}{1mm}
+\setlength{\TPVertModule}{\TPHorizModule}
+\textblockorigin{-\myhoffset}{-\myvoffset}
+
+% fancyhdr : permet de personnaliser les entêtes et pieds de page des documents
+
+\usepackage{fancyhdr}
+
+%% pdfpages : utilisé pour insérer la page de garde avant le document
+
+\usepackage{pdfpages}
 
 \setlength\parindent{0pt}
 
@@ -47,10 +73,13 @@
 
 }
 
+\newcommand{\mymark}[1]{\markboth{\MakeUppercase{#1}}{\MakeUppercase{#1}}}
+
 \newenvironment{biblio}
 {
 \section*{Bibliographie}
 \addcontentsline{toc}{section}{Bibliographie}
+\mymark{Bibliographie}
 }
 {
 
@@ -60,6 +89,7 @@
 {
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
+\mymark{Introduction}
 }
 {
 
@@ -69,6 +99,7 @@
 {
 \section*{Remerciements}
 \addcontentsline{toc}{section}{Remerciements}
+\mymark{Remerciements}
 }
 {
 
@@ -184,32 +215,11 @@
 \newcommand{\vgrad}{\v{\mathrm{grad}}\,}
 
 
+\include{entetes_et_pieds_de_page}
 
-\newcommand{\entete}
-{
-\begin{bfseries}
-\begin{flushleft}
-\hspace*{-1.15cm}
-\large
-\begin{tabular}[t]{@{}l}
-Rapport de PSC\\
-École Polytechnique\\
-Promotion 2010
-\end{tabular}\hfill
-\begin{tabular}{r@{}}
-Octobre à mai 2012
-\end{tabular}\end{flushleft}
-\vspace{0.5cm}
-\begin{center}
-\hspace*{-1cm}
-Production d'électricité à l'aide d'une aile de traction\\
-
-\end{center}
-\end{bfseries}\vspace{0.5cm}
-}
 
 \begin{document}
-\entete
+\include{PageDeGarde}
 
 \tableofcontents
 
@@ -268,11 +278,15 @@ Modélisation du pb , notations, hypothèses (voile rigide, fils tendus et droit
 \end{sous-partie}
 
 \begin{sous-partie}{Cahier des charges}
-- quelles grandeurs doit on mesurer ? quelle précision ?
+- quelles grandeurs doit on mesurer ? %NL%
+quelle précision ?
 \\
-- quelle vitesse de moteur ? quelle précision ? quel couple ?
+- quelle vitesse de moteur ? %NL%
+quelle précision ? %NL%
+quel couple ?
 \\
-- quelle force va s'appliquer sur le système ? quelle robustesse prévoir ?
+- quelle force va s'appliquer sur le système ? %NL%
+quelle robustesse prévoir ?
 \end{sous-partie}
 
 \begin{sous-partie}{Solutions apportées}
