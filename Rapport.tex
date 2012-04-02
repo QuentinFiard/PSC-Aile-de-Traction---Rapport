@@ -309,14 +309,51 @@ Intro (ou dans III.2) : schéma d'asservissement pour rappeler quelles grandeurs
 \end{sous-partie}
 
 \begin{sous-partie}{Description théorique de l'asservissement}
-asservissement en temps réel, expliquer le principe de la fonction distance, expliquer le fait qu'on ne se sert pas de toutes les commandes calculées...
+La trajectoire en 8 que nous souhaitons faire suivre à notre aile de traction-trajectoire que nous avons nous-mêmes déterminée à l'aide d'un algorithme d'optimisation comme on pourra le voir en partie IV- n'est pas une trajectoire auto-stable : sans contrôle, l'aile de Kite surf ne peut rester dessus. Il y a donc besoin d'un contrôle en permanence au niveau de la longueur des câbles pour que l'aile puisse suivre cette trajectoire. 
+\newline
+Par ailleurs, on ne peut enregistrer une séquence d'asservissement en avance pour l'imposer ensuite à l'aile. En effet, les vents étant relativement changeants, les commandes que l'on donne à l'aile doivent être adaptées au conditions climatiques à tout instant.
+\newline
+C'est pourquoi un asservissement en temps réel de la position de l'aile est indispensable.
+Rappelons que nous considérons dans cette étude que l'aile vole sur une sphère de rayon r fixé ($r=20m$ pour notre expérience, $R=600 m$ pour les systèmes d'ailes de traction sur cargos) et que nous connaissons la position de l'aile grâce aux mesures des angles $\theta$ et $\phi$ (via des capteurs incrémentaux au niveau de la liaison de l'aile avec le sol) ainsi que son orientation décrite par les angles $\psi_1$ et $\psi_2$ (l'angle  $\psi_1$ est connu directement à partir du différentiel de longueur entre les 2 brins, et $\psi_2$ est obtenu à l'aide de traitement d'image par caméra).
+Par ailleurs, nous disposons également des dérivées de ces 4 grandeurs en calculant des taux d'accroissement à intervalles de temps petits (suffisamment petits pour que l'incertitude due à ces calculs ne soit pas dominante, comme on l'explique dans la suite). En pratique, comme nous allons le voir dans la suite, nous n'avons pas besoin de connaître les grandeurs $\dot{\psi_1}(t)$ et $\dot{\psi_2}(t)$ pour l'asservissement.
+\newline
+La fonction d'état du Kite s'écrit alors :
+$$X(t)=(\theta(t),\phi(t),\dot{\theta}(t),\dot{\phi}(t),\psi_1(t), \psi_2(t))^T$$
+Il faut à présent définir le contrôle $u$ que l'on a sur le système. Expérimentalement, nous avons pu constater le fait qu'il est possible de faire faire des 8 bouclés au Kite en agissant uniquement sur le différentiel de longueur entre les 2 brins. Nous prenons donc pour grandeur de contrôle u la grandeur $\dot{\psi_1}(t)$ qui est directement reliée au différentiel de vitesse entre les deux brins et donc à la vitesse de rotation du moteur.
+\newline
+\begin{huge}
+Insérer schéma Aubert 1 
+\end{huge}
+(et introduire les grandeurs x et L)
+\newline
+Comme $L x \cos \psi_1(t) = l_1 l_2 -r^2 +\frac{L^2}{4}$ alors : $$\psi_1(t) \approx \arccos \big[\frac{1}{2} + \frac{2(l_1 l_2-r^2)}{L^2}\big]-\pi$$ donc
+$$u = \dot{\psi_1}(t)= -\frac{2\frac{d}{dt}[l_1(t) l_2(t)]}{L^2}* \frac{1}{1/2}$$ car $$1-(\frac{1}{2} + \frac{2(l_1 l_2-r^2)}{L^2})^2 = 1-\frac{1}{4} - 2 \frac{l_1(t)l_2(t)}{L^2} + \big(4 \frac{l_1(t)l_2(t)}{L^2}\big)^2 \approx \frac{3}{4}-\frac{1}{2} + \frac{1}{4}= \frac{1}{2}$$
+On calcule : $\frac{d}{dt}[l_1(t) l_2(t)] = (\dot{l_1}(t)+ \dot{l_2}(t))\frac{l_1 + l_2}{2}+(\dot{l_1}(t)- \dot{l_2}(t))\frac{l_2 - l_1}{2}$. Comme $l_1(t)+l_2(t)=C^{te}$, on a alors $\frac{d}{dt}[l_1(t) l_2(t)]= (\dot{l_1}(t)- \dot{l_2}(t))\frac{l_2 - l_1}{2}$, d'où :
+$$u =  \frac{2 (\dot{l_1}(t)-\dot{l_2}(t))(l_1(t)+l_2(t))}{L^2} \approx \frac{4 r \dot{\mathcal{M}} R_{arbre moteur}}{L^2}$$ où $\dot{\mathcal{M}}$ est la vitesse du moteur (en pratique, c'est ce que l'on contrôle directement dans l'expérience.
+
+
+
+On définit ensuite une fonction distance qui permet de voir de combien l'aile de traction s'est éloignée de la trajectoire prévue initialement (éloignement suite à changement brutal de vent, incertitudes dans le repérage de la position, inexactitudes dans l'asservissement en temps réel...). Notons f cette fonction. Il est à noter que, si l'algorithme effectue le calcul de la commande tous les $\Delta t$ (et applique la commande précédente pendant qu'il calcule la nouvelle), l'algorithme doit minimiser f non pas en une itération, mais pendant sur  une période de temps bien choisie (appelée horizon, notée $T_H$), pour éviter les phénomènes d'oscillation décrits par la figure suivante : 
+\newline
+\begin{Huge}
+insérer schéma 2 (oscillations)
+\end{Huge}
+\newline
+Le principe de l'asservissement en temps direct est alors le suivant : au temps t, on calcule (à l'aide d'un algorithme d'optimisation) liste de commandes à effectuer $(u_1,u_2,...)$ qui va permettre de minimiser (sur la durée $T_H$) la distance entre la trajectoire effective du Kite, et la trajectoire à suivre. Si on calcule N commandes différentes pour le temps $T_H$, ceci signifie que le moteur va changer d'allure tous les $\frac{T_H}{N}s$ pour garder le kite sur la trajectoire. Pendant que le moteur applique ces commandes, on en calcule une nouvelle série de façon à ce que le moteur tourne en continu. Cette procédure est résumée sur le schéma suivant : 
+\newline
+\begin{huge}
+insérer schéma 3 (pas de temps)
+\end{huge}
+Remarque : la durée $\delta t$ doit être choisie petite pour la précision de l'algorithme, pas trop petite non plus pour que le temps de calcul reste raisonnable et pour que le moteur ait le temps de réagir à chacune de ces modifications de sa vitesse.
 \end{sous-partie}
 
 \begin{sous-partie}{Acado et asservissement en temps réel}
-- pourquoi Acado
-\\
-- travail fait avec Pierre Martinon et Mario ...
-\\
+Sur les conseils de Pierre Martinon (Chercheur au CMAP), nous avons utilisé le code Acado Toolkit, développé par Moritz Diehl, pour réaliser notre asservissement en temps réel, qui est un code crée spécifiquement pour ce genre de problème (Moritz Diehl a d'ailleurs étudié personnellement la producion d'énergie à l'aide d'ailes de traction).
+Son collaborateur Mario Zanon a accepté de nous aider à distance en nous guidant sur le débugage de problèmes internes à Acado.
+
+Nous allons à présent évoquer deux points : les pas de temps que nous nous sommes fixés en pratique et la précision des calculs que nous avons réalisé.
+
+
 - problème de détermination de l'horizon de temps (pour être assez précis et pour que le temps de calcul ne soit pas trop long
 \\
 - déterminer le pas de temps de l'algo (compromis entre précision et capacités des composants physiques) + la précision à laquelle on doit faire les calculs
