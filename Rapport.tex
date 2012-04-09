@@ -266,41 +266,140 @@ Modélisation du pb , notations, hypothèses (voile rigide, fils tendus et droit
 
 \begin{partie}{Description technique de l'expérience}
 
-\begin{sous-partie}{Comment passer du problème réel au problème réduit ?}
-- cargo + centrale : notre exp s'applique aux 2
-\newline
-- le boitier dont on étudie la conception sera en fait en l'air
-\newline
-- analyse de la similitude des écoulements
-\newline
-- dimensionnement
+Nous avons défini notre problématique d'asservissement comme suit : Comment imposer au kite le suivi d'une trajectoire donnée ?
+Plus précisément, notre objectif était de faire décrire une trajectoire en forme de huit à une aile de traction en notre possession (environ $2m^2$). %NL%
+{lien avec les problèmes initiaux}
+On entend ici par trajectoire la position absolue du kite dans l'espace, ainsi que son orientation spatiale. %NL%
+Il y a donc théoriquement six variables indépendantes à mesurer : trois pour la position et trois pour l'orientation.\\
+Toutefois, nous avons fait l'hypothèse que l'ensemble des positions atteintes par l'aile de kite, du fait de son attache au sol, est en 1ere approximation une sphère (du fait de la valeur faible de $\frac{l}{L} << 1$. %NL%
+La position va de ce fait pouvoir être repérée par deux variables indépendantes uniquement (correspondant par exemple aux angles $\theta$ et $\phi$ en coordonnée sphériques, r étant fixé). %NL%
+L'orientation spatiale va quant à elle pouvoir être décrite par une seule variable, que nous appellerons $\alpha$.
 
+
+\begin{sous-partie}{Comment passer du problème réel au problème réduit ?}
+- cargo + centrale : notre exp s'applique aux 2\\
+- le boitier dont on étudie la conception sera en fait en l'air - analyse de la similitude des écoulements\\
+- dimensionnement
 \end{sous-partie}
 
 \begin{sous-partie}{Cahier des charges}
 - quelles grandeurs doit on mesurer ? %NL%
-quelle précision ?
+quelle précision ? %NL%
 \\
 - quelle vitesse de moteur ? %NL%
 quelle précision ? %NL%
-quel couple ?
+quel couple ? %NL%
 \\
 - quelle force va s'appliquer sur le système ? %NL%
-quelle robustesse prévoir ?
+quelle robustesse prévoir ? %NL%
+\\
+\\
+- faire un tableau stylé avec les différentes précisions attendues.
+\\
+a)	Les actionneurs\\
+
+Afin de piloter l'aile de traction, nous avions besoin d'un système capable de reproduire un pilotage humain, c'est à  dire un système d'actionneurs permettant de faire varier les longueurs relatives des deux lignes de l'aile de traction. %NL%
+\\
+Afin de faire varier les longueurs relatives des lignes, nous avons choisi d'utiliser un moteur unique entraînant un arbre sur lequel sont fixées une bobine permettant un enroulement des lignes en sens contraire (Cf. %NL%
+figure 1). %NL%
+Ainsi, lorsque l'on enroule une ligne, l'autre se déroule. %NL%
+Ce système a deux avantages par rapport à une solution à deux moteurs :  \\
+-	il permet de mettre en jeu des couples bien moindres car les couples exercés par les deux lignes sur l'axe qui se compensent approximativement en permanence (le couple résultant est négligeable par rapport au couple exercé par l'une des deux lignes). %NL%
+\\
+-	En déroulant une ligne pendant que l'on enroule l'autre, on fait varier plus rapidement les longueurs relatives des lignes que si l'on jouait sur une seule ligne à la fois, ce qui diminue le temps de réponse du système. %NL%
+\\
+\\
+% Celui-ci doit pouvoir être commandé de deux façons différentes : d'une part de façon manuelle lors des phases de décollage et d'atterrissage de l'aile (au moyen d'un Joystick), et d'autre part de façon asservie (via le logiciel de simulation de l'écoulement) lors du suivi de trajectoire.\\
+\\
+ c) 	Choix de l'aile de traction \\
+Les caractéristiques attendues de notre aile de traction devaient être les suivantes : \\
+-	L'aile doit avoir deux lignes de traction de préférence (et non quatre), pour des raisons de complexité de l'asservissement et de simplicité de la commande.\\
+-	L'aile doit être relativement rigide, étant donné que le logiciel de simulation de l'écoulement que nous utilisons calcul les coefficients pour un profil de voile rigide. %NL%
+Ceci est assuré dès que le vent est suffisamment fort et régulier pour maintenir gonflés les caissons de l'aile et que le pilotage se fait sans à-coups et ??? %NL%
+sans variation de la longueur des lignes de l'ordre de la taille de l'aile.??? %NL%
+ \\
+-	L'aile ne doit pas être trop grande ou trop puissante, pour être contrôlable via les actionneurs.\\
+\\
+e)	Mesure du vent\\
+La mesure du vent relatif a été faite de façon indirecte en mesurant le vent au sol et en lui ajoutant la vitesse de l'aile en vol connue par dérivation de sa position par rapport au temps... %NL%
+
+Un anémomètre et une girouette ont donc été intégrés aux boitier au sol.
+\\
+f)	Détermination de la position de l'aile de traction et capteur\\
+L'asservissement reposant sur la trajectoire du kite, nous avons besoin de connaître plusieurs paramètres de vol de l'aile de traction : 
+-	Le modèle aérodynamique développé par ailleurs nécessite la connaissance du vent relatif au niveau de l'aile pour calculer la trainée et la portance qui s'appliquent sur celle-ci.
+-	Le suivi d'une trajectoire prédéfinie nécessite la connaissance de la position de l'aile de traction dans l'espace. %NL%
+Celle-ci évoluant sur une sphère, la position de son centre de gravité est donnée par la mesure de deux angles, et la rotation propre de l'aile autour de l'axe moyen des deux lignes nécessite la connaissance d'un angle supplémentaire.
+Comme évoquée dans le cahier des charges, la position de l'aile est déterminée par la connaissance de 3 angles  (deux angles pour son centre de gravité et un angle pour l'orientation de l'aile par rapport au fil qui la relie au sol).
+On peut en déterminer deux en mesurant les angles de lacet et de tangage de la ligne qui relie l'aile de traction et la nacelle de l'actionneur à la terre. %NL%
+Pour la mesure de ceux-ci, on décompose la liaison rotule entre la ligne partant de la nacelle et la terre en deux liaisons pivot superposées l'une à l'autre et munies chacune d'un capteur angulaire.
+
 \end{sous-partie}
 
+
 \begin{sous-partie}{Solutions apportées}
-- partie électronique : circuits intégrés, capteurs, contrôle du moteur
+
+- partie électronique : circuits intégrés, capteurs, contrôle du moteur \\
+
+- partie mécanique : moteur, anémomètre, prototypage rapide IUT Cachan, échec de l'AX- 18, travail du bois, caméra... %NL%
 \\
-- partie mécanique :  moteur, anémomètre, prototypage rapide IUT Cachan, échec de l'AX-18, travail du bois, caméra...
+\\
+
+a) Principe général du boitier de contrôle
+
+
+
+b) Production des pièces et réalisation du boitier\\
+La réalisation du boitier de contrôle nécessitait de produire plusieurs pièces et de les assembler avec une précision plus ou moins grande. %NL%
+Suite à notre collaboration avec Monsieur Martinelli, professeur à l'IUT de Cachan, nous avons décidé d'utiliser deux moyens de production pour réaliser nos pièces, à savoir : Une machine de prototypage rapide et une machine de découpe laser. %NL%
+Le choix de ces moyens de production nous ont amenés à réaliser une modélisation sous solidedge de l'ensemble de notre système. %NL%
+\\
+La machine de prototypage rapide utilisé est … . %NL%
+Elle fonctionne sur le principe… . %NL%
+La production de pièces par cette machine est assez couteuse (1€/gramme de matière), nous l'avons donc utiliser pour réaliser les pièces demandant une grande précision, ou ayant une forme trop complexe pour être réalisée autrement.\\
+La machine de découpe laser était une nouvelle acquisition de l'IUT, ce qui nous a permis d'inaugurer son utilisation pour une telle réalisation. %NL%
+Un faisceau laser de puissance ??? %NL%
+focalisé par une lentille, permet de découper des matériaux de différent type. %NL%
+Nous avons de notre coté fait le choix du bois, de part son faible coût, et la facilité de sa découpe. %NL%
+Cette machine combine donc les avantages d'une découpe très précise et d'un coût relativement faible de la production.\\
+\\
+
+d) Choix de l'actionneur\\
+Nous nous sommes orientés dans un premier temps vers l'utilisation d'un servomoteur dynamixel AX-18, (puissance) contrôlable facilement de manière numérique. %NL%
+En effet, ce servomoteur comporte des capteurs et une puce intégré, qui permettent de l'asservir très facilement en position, et d'obtenir en retour certaines informations sur son état de fonctionnement (vitesse de rotation, couple exercé sur l'axe moteur, température du moteur...) Cf. %NL%
+Annexe : doc technique de l'AX-18. %NL%
+Les interactions avec le moteur se font via l'envoi de paquet... %NL%
+Nous avons donc dans un premier temps choisi de travailler avec un tel actionneur, et réalisé un premier prototype. %NL%
+Cependant, suite à une manipulation peu heureuse, le moteur s'est cassé.\\
+Nous nous sommes donc tourné vers le choix d'un second actionneur, plus robuste et moins cher. %NL%
+Nous avons ainsi acquis un Hyperion ZS 2213 22, couplé avec un réducteur planétaire Maxon 53 :1. %NL%
+(indiquer la puissance). %NL%
+Malgré ses très bonnes caractéristiques, ce moteur est assez difficilement contrôlable en position, car ... %NL%
+. %NL%
+Nous nous sommes donc tournés vers un asservissement en P.I.D. %NL%
+en vitesse du moteur, ce qui permet tout de même un contôle manuel de la voile via joystick. %NL%
+D'autre part, étant donné la structure de l'asservissement sous Acado mis en place, un asservissement en vitesse était plus intéressant.
+\\
+
+e) Choix des capteurs\\
+La mesure des angles sera obtenue via des capteurs magnétiques AS5045.\\
+Un système de guide-fil redirige les câbles et permet de mesurer l'inclinaison des fils et donc d'obtenir une mesure des angles $\theta$ et $\phi.$. %NL%
+La majorité du système est réalisé en bois...
+Après validation de notre solution par Monsieur Martinelli, nous souhaitons si c'est possible réaliser les pièces du guide-fil au département de génie mécanique de l'IUT de Cachan. %NL%
+Du fait de la grande précision nécessaire concernant la position aimant/capteur angulaire, nous souhaitons réaliser une partie de ces pièces par prototypage rapide. %NL%
+Etant depuis peu sponsorisé par le port de Marseille, nous pouvons apporter à l'IUT un dédommagement financier concernant le matériel prêté.\\
+Pour déterminer l'angle de rotation de l'aile de traction autour de la ligne principale, la solution envisagée passe par du traitement d'images. %NL%
+Une caméra au sol tournant avec l'aile et pointant ainsi toujours dans l'axe de la ligne reconnaîtra un motif caractéristique sur l'aile (une bande fluo par exemple) et mesurera l'angle de rotation de celui-ci autour de l'axe de la ligne (cette caméra est représentée sur la figure 7). %NL%
+Nous comptons utiliser une caméra en notre possession pour réaliser cette mesure. %NL%
+Ceci impliquera un traitement de l'image en temps réel. %NL%
+Le principal problème technique auquel nous sommes confrontés est de synchroniser la caméra avec le fil qui relie la nacelle au sol (il faut que la caméra suive la nacelle dans son vol). %NL%
+Nous comptons utiliser une webcam haute résolution, qui est déjà en notre possession (Logitech Cam C210).
+
 \end{sous-partie}
 
 \begin{sous-partie}{Démarches}
-- IUT Cachan
-\\
-- Sponsor Port de Marseille, création d'un binet, plaquette sponsors
-\\
-- concours energia
+- IUT Cachan\\
+- Sponsor Port de Marseille, création d"un binet, plaquette sponsors - concours energia\\
 \end{sous-partie}
 
 
