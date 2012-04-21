@@ -47,6 +47,26 @@
 
 \usepackage{pdfpages}
 
+% caption : centre les légendes des figures
+
+\usepackage[center]{caption}
+
+% wrapfig : permet de créer des figures entourées de texte
+
+\usepackage{wrapfig}
+
+%placeins : permet d'obliger Latex à insérer les figures en attente avant de continuer
+
+\usepackage{placeins}
+
+% subfig : permet de créer des figures avec plusieurs sous-figures
+
+\usepackage{subfig}
+
+% appendix : permet de gérer les annexes
+
+\usepackage[page]{appendix}
+
 \setlength\parindent{0pt}
 
 \linespread{1.1}
@@ -114,6 +134,63 @@
 
 }
 
+\newenvironment{sous-sous-partie}[1]
+{
+\subsubsection{#1}
+}
+{
+
+}
+
+\newenvironment{liste}
+{
+\vspace{0.2cm}
+\begin{list}{$\bullet$\hspace{0.3cm}}{\leftmargin=1.4cm}
+}
+{
+\end{list}
+\vspace{0.2cm}
+}
+
+\newcounter{numannexe}
+\newenvironment{annexes}
+{
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\addcontentsline{toc}{section}{Annexes}
+\mymark{Annexes}
+\vspace*{\fill}
+\begin{center}
+\Huge{\textbf{Annexes}}
+\end{center}
+\vspace*{\fill}
+\newpage
+\setcounter{numannexe}{1}
+}
+{
+
+}
+
+\newenvironment{annexe}[1]
+{
+\addcontentsline{toc}{subsection}{Annexe \arabic{numannexe} : #1}
+\mymark{Annexe \arabic{numannexe} : #1}
+\subsection*{Annexe \arabic{numannexe} : #1}
+\stepcounter{numannexe}
+}
+{
+}
+
+\newenvironment{sous-annexe}[1]
+{
+\begin{subappendices}
+\subsection{#1}
+}
+{
+\end{subappendices}
+}
 
 
 % Divers
@@ -219,7 +296,7 @@
 
 
 \begin{document}
-\include{PageDeGarde}
+%\include{PageDeGarde}
 
 \tableofcontents
 
@@ -412,11 +489,103 @@ Nous comptons utiliser une webcam haute résolution, qui est déjà en notre pos
 \begin{partie}{Contrôle numérique du système}
 Intro (ou dans III.2) : schéma d'asservissement pour rappeler quelles grandeurs on commande, quelles grandeurs on mesure + schéma couche par  couche comme dans la thèse
 
-\begin{sous-partie}{Description de l'architeture informatique globale}
-- schéma
-\\
-- préciser le contrôle du moteur, des capteurs (programme caméra)
+\begin{sous-partie}{Système informatique de suivi de l'expérience}
+
+\begin{sous-sous-partie}{Conception de l'architecture du système informatique}
+
+\begin{paragraph}{Cahier des charges\vspace{0.3cm}\\}
+La composante logicielle du projet doit être à même d'exécuter l'algorithme de contrôle optimal qui permet d'asservir l'aile sur une trajectoire donnée. %NL%
+Pour remplir cette mission, elle doit satisfaire aux besoins suivants :
+\begin{liste}
+\item Gérer une interface entre l'algorithme et les différents capteurs qui nous renseignent sur l'état de l'aile en temps réel.
+\item Transmettre au moteur la commande calculée par l'algorithme.
+\item Offrir une interface utilisateur permettant le suivi en temps réel de l'expérience.
+\item Enregistrer les données recueillies pendant un essai, pour permettre leur exploitation.
+\end{liste}
+\end{paragraph}
+
+\begin{paragraph}{Architecture informatique choisie\vspace{0.3cm}\\}
+Pour répondre à ces besoins, nous avons décidé de séparer le système informatique en deux composantes distinctes. %NL%
+
+\begin{liste}
+\item Un module, embarquée sur une carte électronique, gère l'acquisition en temps réel des données des capteurs angulaires, le contrôle et l'asservissement en vitesse du moteur.
+\item Un second module, exécuté sur un ordinateur portable, prend en charge l'interface utilisateur, le traitement des images en provenance de la caméra, l'enregistrement des données, et l'exécution de l'algorithme d'asservissement, point névralgique du projet.
+\end{liste}
+La figure~\ref{archinfo} illustre cette répartition des tâches.
+\end{paragraph}
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\linewidth]{./images/architecture_logicielle.jpg}
+	\caption{Architecture globale de la composante informatique du projet}
+	\label{archinfo}
+\end{figure}
+
+\end{sous-sous-partie}
+
+\begin{sous-sous-partie}{Conception de la composante embarquée du système informatique}
+
+\begin{paragraph}{Cahier des charges\vspace{0.3cm}\\}
+Comme présentée dans la section précédente, nous avons donc été confronté lors de la conception du prototype au besoin d'une interface entre d'une part les capteurs angulaires et le moteur, qui nous permettent d'avoir un retour direct sur le bon déroulement de l'expérience et une action correctrice sur l'aile en vol, et d'autre part l'ordinateur qui exécute l'algorithme d'asservissement, et qui requiert des informations en temps réel sur l'état du système. %NL%
+Le cahier des charges que nous avons établi pour cette composante est donc le suivant :
+\begin{liste}
+\item Acquérir en temps réel les données en provenance de cinq capteurs angulaires à effet Hall de type AN5045, produit par austriamicrosystems.
+\item Contrôler et asservir en vitesse un moteur par le biais d'un protocole en modulation d'impulsion codée (décrit dans la suite du rapport, et utilisé très largement en modélisme).
+\item Pouvoir se connecter aisément et échanger à haut débit des données avec un ordinateur.
+\end{liste}
+\end{paragraph}
+
+\begin{paragraph}{\mbox{Solution technique retenue\vspace{0.3cm}\\}}
+\begin{subparagraph}{}
+Afin d'avoir une liberté et un contrôle maximaux sur les données échangées et leur traitement, et devant l'absence de composants sur étagère adaptés, nous avons décidé de développer notre propre carte électronique permettant de remplir les exigences opérationnels listées.
+\end{subparagraph}
+
+\begin{subparagraph}{}
+La carte que nous avons conçue est capable d'acquérir des données provenant de jusqu'à six capteurs angulaires, et contrôler jusqu'à quatre moteurs, et d'en asservir un en vitesse. %NL%
+La carte peut se connecter en USB à un ordinateur, avec un débit d'environ 125 kbits/s. %NL%
+Elle s'articule autour d'un microcontrôleur PIC18F2550, de marque Microchip, choisi pour sa gestion de l'interface USB, son nombre de ports suffisants pour les besoins de l'application, et sa puissance de calcul relativement conséquente (12 millions d'opérations élémentaires par seconde).
+\end{subparagraph}
+\end{paragraph}
+
+\begin{paragraph}{Conception du circuit électronique\vspace{0.3cm}\\}
+Nous avons dessiné le schéma du circuit électronique de la carte sur Eagle, un logiciel de conception de circuit imprimé développé par la société CadSoft, dont une version limitée est disponible gratuitement en ligne. %NL%
+La figure~\ref{schemaCircuitCarte} présente la version finale du circuit qui a été ensuite gravée pour réaliser la carte électronique. %NL%
+Outre les composants nécessaires au fonctionnement du microcontrôleur (condensateurs de découplage, quartz d'horloge), nous avons ajouté un port USB pour la connection à l'ordinateur, et un certain nombre de prises pour les connections aux capteurs et aux moteurs.
+\end{paragraph}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=\linewidth]{./images/schema_circuit_carte.eps}
+	\caption{Schéma du circuit électronique de la carte d'acquisition}
+	\label{schemaCircuitCarte}
+\end{figure}
+
+\FloatBarrier
+
+\begin{paragraph}{Fabrication du circuit imprimé\vspace{0.3cm}\\}
+
+La fabrication du circuit à partir du schéma électronique s'est alors effectuée en plusieurs étapes.
+\begin{liste}
+\item À l'aide du logiciel Eagle, nous avons pu transformer le schéma que nous avions défini en un circuit imprimé double couche, supportant le microcontrôleur dans sa version CMS (composant monté en surface), ainsi que les autres composants.
+\item À partir du circuit ainsi créé, nous avons imprimé un typon à l'échelle 1 sur une imprimante jet d'encre, à même d'être gravé sur une plaque cuivrée présensibilisée.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[scale=1]{./images/circuit_imprime_carte.eps}
+	\caption{Typon à l'échelle 1 dessiné sous Eagle du circuit imprimé de la carte d'acquisition}
+	\label{circuit_imprime_carte}
+\end{figure}
+\item A l'aide d'une insoleuse à tube UV, le circuit est flashé sur la plaque de cuivre, qui est ensuite développée dans une solution peu concentrée de soude. Dans les régions transparentes du typon, le vernis protecteur est alors dissous, et le cuivre est directement visible.
+\item L'excédent de cuivre (où le vernis protecteur a été dissous) est alors oxydé dans une solution composée de 10\% de peroxyde d'oxygène (eau oxygénée à 130 volumes), 10\% d'acide chlorhydrique à 23\%, et 80\% d'eau, en prenant garde à la sécurité des manipulations (port de gants et d'une blouse).
+
+\end{liste}
+\end{paragraph}
+
+\end{sous-sous-partie}
+
 \end{sous-partie}
+
+
+
 \begin{sous-partie}{Calcul des coéfficients aérodynamiques via Gerris}
 
 \end{sous-partie}
@@ -529,5 +698,34 @@ Trajectoires optimales, robustesse.
 \begin{biblio}
 
 \end{biblio}
+
+\begin{annexes}
+
+\begin{annexe}{Fabrication des circuits imprimés}
+
+\begin{figure}[!h]
+	\captionsetup[subfigure]{labelformat=empty}
+	\centering
+	\newlength{\largeurphoto}
+	\newlength{\margesphoto}
+	\setlength{\margesphoto}{1cm}
+	\setlength{\largeurphoto}{\linewidth/2}
+	\addtolength{\largeurphoto}{-\margesphoto/2-0,1cm}
+	\subfloat[Typon du circuit imprimé]{\includegraphics[width=\largeurphoto]{./images/capteurs_typon.jpg}}
+	\hspace{\margesphoto}
+	\subfloat[Après révélation, le cuivre est apparent dans les zones où le typon était transparent.]{\includegraphics[width=\largeurphoto]{./images/capteurs_revelation.jpg}}\vspace{0.5cm}\\
+	\subfloat[En cours de gravure. %NL%
+Le cuivre non protégé est oxydé par la solution de peroxyde d'oxygène, dans une réaction exothermique.]{\includegraphics[width=\largeurphoto]{./images/capteurs_gravure.png}}
+	\hspace{\margesphoto}
+	\subfloat[Après gravure, le cuivre a été entièrement dissous, et n'est plus présent que dans les zones où le typon était opaque.]{\includegraphics[width=\largeurphoto]{./images/capteurs_apres_gravure.jpg}}\vspace{0.5cm}\\
+	\addtolength{\largeurphoto}{\largeurphoto/4}
+	\subfloat[La plaque prête à recevoir les composants]{\includegraphics[width=\largeurphoto]{./images/capteurs_pret.jpg}}
+\end{figure}
+
+\FloatBarrier
+
+\end{annexe}
+
+\end{annexes}
 
 \end{document}
