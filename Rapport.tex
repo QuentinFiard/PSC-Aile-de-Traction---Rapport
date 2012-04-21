@@ -39,6 +39,10 @@
 \setlength{\TPVertModule}{\TPHorizModule}
 \textblockorigin{-\myhoffset}{-\myvoffset}
 
+% appendix : permet d'écrire en couleur
+
+\usepackage[usenames,dvipsnames]{xcolor}
+
 % fancyhdr : permet de personnaliser les entêtes et pieds de page des documents
 
 \usepackage{fancyhdr}
@@ -529,7 +533,7 @@ La figure~\ref{archinfo} illustre cette répartition des tâches.
 Comme présentée dans la section précédente, nous avons donc été confronté lors de la conception du prototype au besoin d'une interface entre d'une part les capteurs angulaires et le moteur, qui nous permettent d'avoir un retour direct sur le bon déroulement de l'expérience et une action correctrice sur l'aile en vol, et d'autre part l'ordinateur qui exécute l'algorithme d'asservissement, et qui requiert des informations en temps réel sur l'état du système. %NL%
 Le cahier des charges que nous avons établi pour cette composante est donc le suivant :
 \begin{liste}
-\item Acquérir en temps réel les données en provenance de cinq capteurs angulaires à effet Hall de type AN5045, produit par austriamicrosystems.
+\item Acquérir en temps réel les données en provenance de cinq capteurs angulaires à effet Hall de type AS5045, produit par austriamicrosystems.
 \item Contrôler et asservir en vitesse un moteur par le biais d'un protocole en modulation d'impulsion codée (décrit dans la suite du rapport, et utilisé très largement en modélisme).
 \item Pouvoir se connecter aisément et échanger à haut débit des données avec un ordinateur.
 \end{liste}
@@ -578,6 +582,66 @@ La fabrication du circuit à partir du schéma électronique s'est alors effectu
 \item L'excédent de cuivre (où le vernis protecteur a été dissous) est alors oxydé dans une solution composée de 10\% de peroxyde d'oxygène (eau oxygénée à 130 volumes), 10\% d'acide chlorhydrique à 23\%, et 80\% d'eau, en prenant garde à la sécurité des manipulations (port de gants et d'une blouse).
 
 \end{liste}
+\end{paragraph}
+
+\begin{paragraph}{Programmation du microcontrôleur\vspace{0.3cm}\\}
+Le programme du microcontrôleur a été écrit en C sous l'environnement de développement MPLAB~X, développé par Microchip. %NL%
+Nous allons maintenant présenter comment nous sommes parvenus à réaliser l'acquisition des données des capteurs et la commande du moteur.
+
+\begin{subparagraph}{Acquisition des données des capteurs.}
+La fiche technique du capteur AS5045 présente le protocole de communication permettant de lire la position angulaire mesurée par le capteur (figure~\ref{protocole_capteur}). %NL%
+Il s'agit d'un protocole de communication en série, où le capteur envoie un bit de donnée à chaque fois qu'il reçoit un signal horloge du microcontrôleur. %NL%
+Un paquet de données est formée de 12 bits qui représentent la position angulaire (soit 4096 positions par tours), suivis de 6 bits donnant le status du capteur et permettant de détecter des erreurs de communication. %NL%
+Un port du capteur est de plus utilisé pour choisir de quel capteur nous souhaitons lire les données, ce qui permet de lire les six capteurs avec seulement 8 ports sur le microcontrôleur (6 ports de sélection, un d'horloge, et un de lecture).
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\textwidth]{./images/protocole_capteur.png}
+	\caption{Protocole de communication utilisés par les capteurs angulaires}
+	\label{protocole_capteur}
+\end{figure}
+
+Ce protocole a été implémenté dans le microcontrôleur, et la figure~\ref{protocole_capteur_oscillo} présente la réponse réelle d'un capteur suite à une interrogation du microcontrôleur, telle que vue sur un oscilloscope.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{./images/protocole_capteur_oscillo.png}
+	\caption{\textbf{\color{Cerulean}Signal d'horloge}, de \textbf{\color{Red}sélection de capteur} et de \textbf{\color{ForestGreen}réponse du capteur} lors d'une acquisition de données angulaires.}
+	\label{protocole_capteur_oscillo}
+\end{figure}
+
+\end{subparagraph}
+
+\begin{subparagraph}{Contrôle et asservissement du moteur}
+Le moteur est contrôlé par un signal en modulation d'impulsion codée. %NL%
+Largement répandu en modélisme, ce signal se caractérise par l'encodage de la commande sous forme d'une pulsation dont la largeur est corrélée à la commande, émis à une fréquence qui ne dépend pas de la commande, et qui de l'ordre de 50 Hz. %NL%
+Du fait de sa vitesse d'exécution de 12 millions d'opérations par seconde et de sa grande précision temporelle, le microcontrôleur choisi est tout à fait adapté pour générer de tels signaux. %NL%
+Les figures~\ref{signal_pcm_global}~et~\ref{signal_pwm_detail} illustrent la forme des signaux générés par le microcontrôleur pour le contrôle du moteur. %NL%
+
+
+\newlength{\largeurphotooscillo}
+\setlength{\largeurphotooscillo}{\textwidth}
+\addtolength{\largeurphotooscillo}{-0,6cm}
+\setlength{\largeurphotooscillo}{\largeurphotooscillo/2}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\largeurphotooscillo]{./images/signal_pcm_global.png}
+	\caption{La fréquence d'émission des pulsations est de l'ordre de 50 Hz}
+	\label{signal_pcm_global}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\captionsetup[subfigure]{labelformat=empty}
+	\subfloat[Moteur à l'arrêt]{\includegraphics[width=\largeurphotooscillo]{./images/signal_pcm_neutre.png}}
+	\hspace{0,5cm}\subfloat[Moteur en rotation à la vitesse maximale dans le sens positif]{\includegraphics[width=\largeurphotooscillo]{./images/signal_pcm_max.png}}
+	\caption{Variation de la largeur d'impulsion en fonction de la commande}
+	\label{signal_pwm_detail}
+\end{figure}
+
+\end{subparagraph}
+
 \end{paragraph}
 
 \end{sous-sous-partie}
